@@ -113,31 +113,31 @@ This repo uses two remotes and branches:
 **General improvements (portable):**
 
 ```bash
-git checkout main
+git checkout main                # switch to portable branch
 # make changes to tracked files
 git commit -am "description"
-git push origin main
-git checkout work
-git cherry-pick main
-git push work work
+git push origin main             # push to personal GitHub
+git checkout work                # switch back to work branch
+git cherry-pick main             # copy the commit to work
+git push work work               # push to work GitHub
 ```
 
 **Work-specific changes:**
 
 ```bash
-git checkout work
+git checkout work                # should already be here
 # make changes to local/ or work-specific files
 git commit -am "description"
-git push work work
+git push work work               # only goes to work GitHub
 ```
 
 **Sync specific file from work to main:**
 
 ```bash
 git checkout main
-git checkout work -- path/to/file
+git checkout work -- path/to/file   # grab file from work branch
 git commit -m "description"
 git push origin main
 ```
 
-> **Note:** Don't use `git merge` between branches — the `.gitignore` differs between them. Use `cherry-pick` or checkout specific files instead.
+> **Note:** The `.gitignore` differs between branches (main ignores local files, work tracks them). Use `cherry-pick` or checkout specific files to sync changes.
