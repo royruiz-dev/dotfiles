@@ -3,6 +3,20 @@ set -e
 
 DOTFILES="$HOME/.dotfiles"
 
+# Helper: create symlink, prompting if target exists
+link() {
+    local src="$1"
+    local dst="$2"
+    if [[ -e "$dst" && ! -L "$dst" ]]; then
+        echo "Warning: $dst exists and is not a symlink"
+        read -p "Remove it? (y/n) " -n 1 -r
+        echo
+        [[ $REPLY =~ ^[Yy]$ ]] || return 1
+    fi
+    rm -rf "$dst"
+    ln -sf "$src" "$dst"
+}
+
 echo "Installing dotfiles..."
 
 # 1. Check/install core dependencies
@@ -19,13 +33,13 @@ done
 echo "Creating symlinks..."
 mkdir -p ~/.config
 
-ln -sf "$DOTFILES/zsh/.zshrc" ~/.zshrc
-ln -sf "$DOTFILES/zsh" ~/.zsh
-ln -sf "$DOTFILES/zsh/configs/p10k.zsh" ~/.p10k.zsh
-ln -sf "$DOTFILES/zsh/configs/starship.toml" ~/.config/starship.toml
-ln -sf "$DOTFILES/nvim" ~/.config/nvim
-ln -sf "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
-ln -sf "$DOTFILES/wezterm/wezterm.lua" ~/.wezterm.lua
+link "$DOTFILES/zsh/.zshrc" ~/.zshrc
+link "$DOTFILES/zsh" ~/.zsh
+link "$DOTFILES/zsh/configs/p10k.zsh" ~/.p10k.zsh
+link "$DOTFILES/zsh/configs/starship.toml" ~/.config/starship.toml
+link "$DOTFILES/nvim" ~/.config/nvim
+link "$DOTFILES/tmux/.tmux.conf" ~/.tmux.conf
+link "$DOTFILES/wezterm/wezterm.lua" ~/.wezterm.lua
 
 # 3. TPM (tmux plugin manager)
 if [[ ! -d ~/.tmux/plugins/tpm ]]; then
