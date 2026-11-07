@@ -105,9 +105,9 @@ fh utilities         # Utility functions help
 
 This repo uses two remotes and branches:
 
-| Remote   | Branch | Content                          |
-| -------- | ------ | -------------------------------- |
-| `origin` | `main` | Portable config (no local files) |
+| Remote   | Branch | Content                             |
+| -------- | ------ | ----------------------------------- |
+| `origin` | `main` | Portable config (no local files)    |
 | `work`   | `work` | Everything (includes work-specific) |
 
 **General improvements (portable):**
@@ -118,7 +118,7 @@ git checkout main
 git commit -am "description"
 git push origin main
 git checkout work
-git merge main
+git cherry-pick main
 git push work work
 ```
 
@@ -131,4 +131,13 @@ git commit -am "description"
 git push work work
 ```
 
-The `main` branch respects `.gitignore` (excludes `zsh/local/`, `wezterm.hai.lua`). The `work` branch tracks everything.
+**Sync specific file from work to main:**
+
+```bash
+git checkout main
+git checkout work -- path/to/file
+git commit -m "description"
+git push origin main
+```
+
+> **Note:** Don't use `git merge` between branches — the `.gitignore` differs between them. Use `cherry-pick` or checkout specific files instead.
