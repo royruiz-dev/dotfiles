@@ -1,0 +1,8 @@
+# Machine-specific config
+zsh/local/
+wezterm/wezterm.hai.lua
+
+# Backup files
+*.backup
+*.backup.*
+*.bak
