@@ -100,3 +100,35 @@ fh list              # Show available help categories
 fh claude            # Claude session help
 fh utilities         # Utility functions help
 ```
+
+## Git Workflow
+
+This repo uses two remotes and branches:
+
+| Remote   | Branch | Content                          |
+| -------- | ------ | -------------------------------- |
+| `origin` | `main` | Portable config (no local files) |
+| `work`   | `work` | Everything (includes work-specific) |
+
+**General improvements (portable):**
+
+```bash
+git checkout main
+# make changes to tracked files
+git commit -am "description"
+git push origin main
+git checkout work
+git merge main
+git push work work
+```
+
+**Work-specific changes:**
+
+```bash
+git checkout work
+# make changes to local/ or work-specific files
+git commit -am "description"
+git push work work
+```
+
+The `main` branch respects `.gitignore` (excludes `zsh/local/`, `wezterm.hai.lua`). The `work` branch tracks everything.
