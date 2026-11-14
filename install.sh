@@ -29,6 +29,23 @@ for dep in "${deps[@]}"; do
     fi
 done
 
+# 1b. Nerd Fonts used by wezterm/components/presets.lua (M.fonts)
+echo "Checking fonts..."
+font_casks=(
+    font-fantasque-sans-mono-nerd-font font-meslo-lg-nerd-font font-fira-code-nerd-font
+    font-iosevka-nerd-font font-iosevka-term-nerd-font font-sauce-code-pro-nerd-font
+    font-jetbrains-mono-nerd-font font-hack-nerd-font font-caskaydia-cove-nerd-font
+    font-monaspace-nerd-font font-commit-mono-nerd-font font-geist-mono-nerd-font
+    font-victor-mono-nerd-font font-0xproto-nerd-font font-blex-mono-nerd-font
+    font-departure-mono-nerd-font font-maple-mono-nf
+)
+for cask in "${font_casks[@]}"; do
+    if ! brew list --cask "$cask" &>/dev/null; then
+        echo "Installing $cask..."
+        brew install --cask "$cask" || echo "Warning: failed to install $cask"
+    fi
+done
+
 # 2. Create symlinks
 echo "Creating symlinks..."
 mkdir -p ~/.config
