@@ -39,3 +39,7 @@ keymap.set('n', '<A-Down>', ':m .+1<CR>==', { desc = "Move line down", noremap =
 -- Visual mode: move selected lines up/down
 keymap.set('v', '<A-Up>', ":m '<-2<CR>gv=gv", { desc = "Move lines up", noremap = true, silent = true })
 keymap.set('v', '<A-Down>', ":m '>+1<CR>gv=gv", { desc = "Move lines down", noremap = true, silent = true })
+
+-- Visual mode: indent/dedent selected lines
+keymap.set('v', '<Tab>', '>gv', { desc = "Indent lines", noremap = true, silent = true })
+keymap.set('v', '<S-Tab>', '<gv', { desc = "Dedent lines", noremap = true, silent = true })

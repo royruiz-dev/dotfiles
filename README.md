@@ -75,6 +75,7 @@ The main config conditionally loads `wezterm.hai.lua` if present. On machines wi
 
 ```text
 ~/.zshrc              → ~/.dotfiles/zsh/.zshrc
+~/.zprofile           → ~/.dotfiles/zsh/.zprofile
 ~/.zsh                → ~/.dotfiles/zsh
 ~/.p10k.zsh           → ~/.dotfiles/zsh/configs/p10k.zsh
 ~/.config/starship.toml → ~/.dotfiles/zsh/configs/starship.toml

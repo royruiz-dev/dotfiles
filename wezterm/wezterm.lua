@@ -1,6 +1,15 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
 
+-- Load presets module (fonts, sizes, themes)
+local config_file = wezterm.config_file
+local handle = io.popen("readlink '" .. config_file .. "' 2>/dev/null || echo '" .. config_file .. "'")
+local resolved = handle:read("*a"):gsub("%s+$", "")
+handle:close()
+local config_dir = resolved:match("(.*/)")
+package.path = config_dir .. "components/?.lua;" .. package.path
+local presets = require("presets")
+
 -- Helper function to equalize all panes
 local function equalize_panes(window, pane)
   wezterm.log_info("=== EQUALIZE STARTED ===")
@@ -320,10 +329,14 @@ local function resize_pane_with_feedback(window, pane, direction, amount)
     local cols = dims.cols or dims.viewport_columns or 0
     local rows = dims.rows or dims.viewport_rows or 0
     if cols > 0 and rows > 0 then
-      local status = string.format("  %dx%d  ", cols, rows)
+      local window_themes = wezterm.GLOBAL.window_themes or {}
+      local win_id = tostring(window:window_id())
+      local theme = window_themes[win_id] or wezterm.GLOBAL.default_theme or {}
+      local accent = theme.accent or { bg = "#006AA8", fg = "#C7E1F1" }
+      local status = string.format("  %d × %d  ", cols, rows)
       window:set_right_status(wezterm.format({
-        {Background={Color="#006AA8"}},
-        {Foreground={Color="#C7E1F1"}},
+        {Background={Color=accent.bg}},
+        {Foreground={Color=accent.fg}},
         {Attribute={Intensity="Bold"}},
         {Text=status},
       }))
@@ -372,10 +385,14 @@ if not hai_loaded then
       return
     end
 
+    local window_themes = wezterm.GLOBAL.window_themes or {}
+    local win_id = tostring(window:window_id())
+    local theme = window_themes[win_id] or wezterm.GLOBAL.default_theme or {}
+    local accent = theme.accent or { bg = "#006AA8", fg = "#C7E1F1" }
     window:set_right_status(wezterm.format({
-      {Background={Color="#006AA8"}},
-      {Foreground={Color="#C7E1F1"}},
-      {Text = string.format(" %dx%d ", cols, rows)},
+      {Background={Color=accent.bg}},
+      {Foreground={Color=accent.fg}},
+      {Text = string.format(" %d × %d ", cols, rows)},
     }))
   end)
 
@@ -453,8 +470,8 @@ local function config_builder()
   -- config.color_scheme = "Tokyo Night"
   -- config.color_scheme = "Nord"
 
-  config.font = wezterm.font("MesloLGS Nerd Font Mono")
-  config.font_size = 15
+  -- Apply font, size, and theme from presets
+  presets.apply(config)
 
   config.enable_tab_bar = true
   config.use_fancy_tab_bar = false
@@ -472,47 +489,6 @@ local function config_builder()
     right = 0,
     top = 1,
     bottom = 1,
-  }
-  --
-  -- Coolnight colorscheme:
-  config.colors = {
-    foreground = "#CBE0F0",
-    background = "#011423",
-    cursor_bg = "#47FF9C",
-    cursor_border = "#47FF9C",
-    cursor_fg = "#011423",
-    selection_bg = "#033259",
-    selection_fg = "#CBE0F0",
-    ansi = { "#214969", "#FF6E6E", "#44FFB1", "#FFE073", "#0FC5ED", "#a277ff", "#24EAF7", "#24EAF7" },
-    brights = { "#214969", "#E52E2E", "#44FFB1", "#FFE073", "#A277FF", "#a277ff", "#24EAF7", "#24EAF7" },
-
-    -- Pane divider color
-    split = "#1F6AA5",
-
-    -- Tab bar colors
-    tab_bar = {
-      background = "#001424",  -- Your theme background
-      active_tab = {
-        bg_color = "#001424",  -- Your theme background
-        fg_color = "#C7E1F1",  -- Your theme text color
-      },
-      inactive_tab = {
-        bg_color = "#011F35",  -- Slightly lighter than background
-        fg_color = "#7A9DB0",  -- Dimmed version of text color
-      },
-      inactive_tab_hover = {
-        bg_color = "#022A45",  -- Even lighter on hover
-        fg_color = "#C7E1F1",  -- Full brightness on hover
-      },
-      new_tab = {
-        bg_color = "#011F35",
-        fg_color = "#7A9DB0",
-      },
-      new_tab_hover = {
-        bg_color = "#022A45",
-        fg_color = "#C7E1F1",
-      },
-    },
   }
 
   -- Pane focus behavior
@@ -575,6 +551,12 @@ local function config_builder()
   if hai_loaded and _G.toggle_hai_stack then
     table.insert(config.keys, {key="h", mods="CMD|SHIFT", action=wezterm.action_callback(_G.toggle_hai_stack)})
   end
+
+  -- Preset pickers
+  table.insert(config.keys, {key="f", mods="CMD|SHIFT", action=presets.font_picker()})
+  table.insert(config.keys, {key="s", mods="CMD|SHIFT", action=presets.size_picker()})
+  table.insert(config.keys, {key="w", mods="CMD|SHIFT", action=presets.weight_picker()})
+  table.insert(config.keys, {key="t", mods="CMD|SHIFT", action=presets.theme_picker()})
 
   -- -- Override Cmd+C
   -- table.insert(config.keys, {

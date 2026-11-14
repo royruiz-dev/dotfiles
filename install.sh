@@ -35,6 +35,7 @@ mkdir -p ~/.config
 
 link "$DOTFILES/zsh/.zshrc" ~/.zshrc
 link "$DOTFILES/zsh" ~/.zsh
+link "$DOTFILES/zsh/.zprofile" ~/.zprofile
 link "$DOTFILES/zsh/configs/p10k.zsh" ~/.p10k.zsh
 link "$DOTFILES/zsh/configs/starship.toml" ~/.config/starship.toml
 link "$DOTFILES/nvim" ~/.config/nvim
